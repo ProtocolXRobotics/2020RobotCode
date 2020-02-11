@@ -7,9 +7,19 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -17,15 +27,57 @@ public class Drivetrain extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+  CANSparkMax masterLeft = new CANSparkMax(Constants.masterLeftDrive, MotorType.kBrushless);
+  CANSparkMax slaveLeft = new CANSparkMax(Constants.slaveLeftDrive, MotorType.kBrushless);
+  CANSparkMax masterRight = new CANSparkMax(Constants.masterRightDrive, MotorType.kBrushless);
+  CANSparkMax slaveRight = new CANSparkMax(Constants.slaveRightDrive, MotorType.kBrushless);
+  SpeedControllerGroup right = new SpeedControllerGroup(masterRight, slaveRight);
+  SpeedControllerGroup left = new SpeedControllerGroup(masterLeft, slaveLeft);
+  DifferentialDrive robotDrive = new DifferentialDrive(left, right);
+  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+  CANEncoder leftEnc = masterLeft.getAlternateEncoder();
+  CANEncoder rightEnc = masterRight.getAlternateEncoder();
+  AHRS gyro = new AHRS(Port.kMXP);
+  
   public Drivetrain() {
-    CANSparkMax leftMotor1 = new CANSparkMax(Constants.masterLeftDrive, MotorType.kBrushless);
-    CANSparkMax leftMotor2 = new CANSparkMax(Constants.slaveLeftDrive, MotorType.kBrushless);
-    CANSparkMax rightMotor1 = new CANSparkMax(Constants.masterRightDrive, MotorType.kBrushless);
-    CANSparkMax rightMotor2 = new CANSparkMax(Constants.slaveRightDrive, MotorType.kBrushless);
+
+    slaveLeft.follow(masterLeft);
+    slaveRight.follow(masterRight);
+    leftEnc.setVelocityConversionFactor(1); //Factor to convert RPM to ft/s
+    leftEnc.setPositionConversionFactor(1); //Convert Rotations to ft
+    rightEnc.setVelocityConversionFactor(1);
+    rightEnc.setPositionConversionFactor(1);
+
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // This method will be called once per scheduler run\
+    odometry.update(Rotation2d.fromDegrees(getHeading()), leftEnc.getPosition(), rightEnc.getPosition());
   }
+
+  public void tankDrive(double leftPower, double rightPower, boolean squareInputs) {
+    robotDrive.tankDrive(leftPower, rightPower, squareInputs);
+  }
+
+  public void arcadeDrive(double speed, double turn, boolean squareInputs) {
+    robotDrive.arcadeDrive(speed, turn, squareInputs);
+  }
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(leftEnc.getVelocity(), rightEnc.getVelocity());
+  }
+
+  public double getHeading() {
+    return gyro.getYaw();
+  }
+
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    left.setVoltage(leftVolts);
+    right.setVoltage(-rightVolts);
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
 }
