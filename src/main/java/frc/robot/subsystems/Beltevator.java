@@ -9,32 +9,30 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Climber extends SubsystemBase {
+public class Beltevator extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
 
-  VictorSPX wrist = new VictorSPX(Constants.climb);
-  VictorSPX winch = new VictorSPX(Constants.winch);
-  
-  
-  public Climber() {
+  VictorSPX accelWheel = new VictorSPX(Constants.accelWheel);
+  VictorSPX belt = new VictorSPX(Constants.belt);
+
+  public Beltevator() {
    
   }
 
-  public void wristArm(double power) {
-    wrist.set(ControlMode.PercentOutput, power);
-    
+  public void spinAccelWheel(double power) {
+    accelWheel.set(ControlMode.PercentOutput, power);
   }
 
-  public void climb(double power) {
-    winch.set(ControlMode.PercentOutput, power);
-    
+  public void elevate(double power) {
+    belt.set(ControlMode.PercentOutput, power);
   }
-
+  
   
   @Override
   public void periodic() {

@@ -7,25 +7,26 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class TankDrive extends CommandBase {
+public class SetWinchSpeed extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Drivetrain drivetrain;
-
+  private final Climber climber;
+  private final double power;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TankDrive(Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
+  public SetWinchSpeed(Climber climber, double power) {
+    this.climber = climber;
+    this.power = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drivetrain);
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -36,6 +37,7 @@ public class TankDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    climber.climb(power);
   }
 
   // Called once the command ends or is interrupted.

@@ -26,11 +26,17 @@ public final class Constants {
     public static int slaveRightDrive = 3;
     public static int masterShooter = 4;
     public static int slaveShooter = 5;
-    public static int turret = 6;
-    public static int intakeMotor = 7;
-    public static int leftIndexer = 8;
-    public static int rightIndexer = 9;
-    public static int climb = 10;
+    public static int intakeMotor = 6;
+    public static int leftIndexer = 7;
+    public static int rightIndexer = 8;
+    public static int accelWheel = 9;
+    public static int belt = 10;
+
+    public static int climb = 11;
+    public static int winch = 12;
+
+    public static int turret = 15;
+    
     // Use Drive Characterization to find these constants
     public static final double ksVolts = 0.22;
     public static final double kvVoltSecondsPerMeter = 1.98;

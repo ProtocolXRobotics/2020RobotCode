@@ -36,6 +36,7 @@ public class Shooter extends SubsystemBase {
     shooterPID.setD(kD);
     shooterPID.setOutputRange(0, 1);
     slaveShooter.follow(masterShooter);
+    
   }
 
   public void setVelocity(double RPM) {

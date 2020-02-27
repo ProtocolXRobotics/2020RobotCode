@@ -7,9 +7,10 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -17,10 +18,19 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import frc.robot.commands.TankDrive;
+import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.SetIntakeSpeed;
+import frc.robot.commands.SetShooterSpeed;
+import frc.robot.subsystems.Beltevator;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -30,18 +40,30 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drivetrain drive = new Drivetrain();
+  private final Drivetrain drivetrain = new Drivetrain();
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
+  private final Beltevator beltevator = new Beltevator();
+  private final Climber climber = new Climber();
 
-  private final TankDrive m_autoCommand = new TankDrive(drive);
+  private final XboxController driver = new XboxController(0);
+  private final XboxController operator = new XboxController(1);
 
+  
 
+  private Command baseline = new RunCommand(() -> drivetrain.arcadeDrive(0.5, 0, false)).withTimeout(3);
 
+  
+                                
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
+    drivetrain.setDefaultCommand(new ArcadeDrive(driver.getY(Hand.kLeft), driver.getX(Hand.kRight), drivetrain));
+
     configureButtonBindings();
+    
   }
 
   /**
@@ -51,7 +73,21 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    new JoystickButton(operator, Button.kBumperLeft.value)
+        .whenPressed(new InstantCommand(intake::actuateIntake, intake));
+
+    new JoystickButton(operator, Button.kBumperRight.value)
+        .toggleWhenPressed(new RunCommand(() -> intake.setPower(0.8)));
+
+    new JoystickButton(operator, Button.kY.value)
+        .whileHeld(new SetShooterSpeed(shooter, 3500));
+    
+    new JoystickButton(operator, Button.kX.value)
+        .whileHeld(new SetShooterSpeed(shooter, 5000));
+    
+    
   }
+
 
 
   /**
@@ -61,6 +97,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
+    /*
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.ksVolts,
@@ -92,7 +129,7 @@ public class RobotContainer {
               drive::tankDriveVolts, 
               drive
               );     
-
-    return ramsyeet.andThen(() -> drive.tankDriveVolts(0, 0));
+*/
+    return baseline;
   }
 }

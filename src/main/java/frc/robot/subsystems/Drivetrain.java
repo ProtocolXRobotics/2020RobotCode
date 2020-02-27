@@ -38,6 +38,7 @@ public class Drivetrain extends SubsystemBase {
   CANEncoder leftEnc = masterLeft.getAlternateEncoder();
   CANEncoder rightEnc = masterRight.getAlternateEncoder();
   AHRS gyro = new AHRS(Port.kMXP);
+  public boolean isQuickTurn = false;
   
   public Drivetrain() {
 
@@ -63,6 +64,15 @@ public class Drivetrain extends SubsystemBase {
   public void arcadeDrive(double speed, double turn, boolean squareInputs) {
     robotDrive.arcadeDrive(speed, turn, squareInputs);
   }
+
+  public void stopDrive() {
+    robotDrive.arcadeDrive(0, 0);
+  }
+
+  public void curvatureDrive(double speed, double turn) {
+    robotDrive.curvatureDrive(speed, turn, isQuickTurn);
+  }
+
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(leftEnc.getVelocity(), rightEnc.getVelocity());
   }
@@ -79,5 +89,13 @@ public class Drivetrain extends SubsystemBase {
   public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
+
+  public void toggleQuickTurn() {
+    if(isQuickTurn)
+      isQuickTurn=false;
+    else
+      isQuickTurn=true;
+  }
+
 
 }

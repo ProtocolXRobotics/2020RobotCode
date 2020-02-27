@@ -7,26 +7,26 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ActuateIntake extends CommandBase {
+public class WristClimber extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake intake;
- 
+  private final Climber climber;
+  private final double power;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ActuateIntake(Intake intake) {
-    this.intake = intake;
-
+  public WristClimber(Climber climber, double power) {
+    this.climber = climber;
+    this.power = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intake);
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -37,18 +37,17 @@ public class ActuateIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.actuateIntake();
+    climber.wristArm(power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
