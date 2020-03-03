@@ -23,7 +23,6 @@ import frc.robot.commands.CurvatureDrive;
 import frc.robot.commands.Hopper;
 import frc.robot.commands.SetIntakeSpeed;
 import frc.robot.commands.SetShooterSpeed;
-import frc.robot.commands.ToggleLight;
 import frc.robot.commands.Unjam;
 import frc.robot.subsystems.Beltevator;
 import frc.robot.subsystems.Climber;
@@ -94,11 +93,12 @@ public class RobotContainer {
         .whileHeld(new SetShooterSpeed(shooter, 2500));
 
     new JoystickButton(operator, Button.kB.value)
-        .whileHeld(new SetShooterSpeed(shooter, 4000)); 
+        .whileHeld(new SetShooterSpeed(shooter,4000)); 
         
         
-    new JoystickButton(driver, Button.kBumperLeft.value)
+    /*new JoystickButton(driver, Button.kBumperLeft.value)
         .whileHeld(new ToggleLight(limelight));  
+        */
 
     new JoystickButton(operator, Button.kA.value)
         .whileHeld(new Unjam(beltevator, indexer));  

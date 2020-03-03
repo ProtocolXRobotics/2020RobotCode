@@ -31,8 +31,8 @@ public class Shooter extends SubsystemBase {
     kP = 5e-3; 
     kI = 0;
     kD = 0; 
-    slaveShooter.follow(masterShooter, false);
-    masterShooter.setInverted(true);
+    slaveShooter.follow(masterShooter, true);
+   // masterShooter.setInverted(true);
    // slaveShooter.setInverted(false);
     shooterPID.setP(kP);
     shooterPID.setI(kI);
@@ -47,6 +47,10 @@ public class Shooter extends SubsystemBase {
 
   public void setVelocity(double RPM) {
     shooterPID.setReference(RPM, ControlType.kVelocity);
+}
+
+public void setPower(double power) {
+  masterShooter.set(power);
 }
   @Override
   public void periodic() {

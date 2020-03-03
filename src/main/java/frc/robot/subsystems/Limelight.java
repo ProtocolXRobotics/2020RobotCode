@@ -1,190 +1,194 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.*;
 
+/**
+ * Class encapsulating limelight function.
+ */
 public class Limelight extends SubsystemBase {
 
+    // constants
+    private static final double CAMERA_HEIGHT = 240; // pixels
+    private static final double CAMERA_WIDTH = 320; // pixels
+    private static final double CAMERA_FOV_HOR = Math.toRadians(59.6); // rads
+    private static final double CAMERA_FOV_VER = Math.toRadians(49.7); // rads
+    private static final double FORMULA_RATIO = 86.0;
+    private static final double PORT_HEIGHT = 8.1875; // meters
+    private static final double TAPE_HEIGHT = 2.5 / 2.0; // between bottom and top, feet
+    private static final double SHOOTER_HEIGHT = 1.8;
+    private static final double HEIGHT_DIFF = PORT_HEIGHT - SHOOTER_HEIGHT; // feet
+    private static final double CAMERA_ANGLE = 26; // degrees
 
-  double validTarget;  // Whether the limelight has any valid targets (0 or 1)
-  double xOffset;      // Horiszontal Offset from crosshair to target (-27 degrees to 27 degrees)
-  double yOffset;      // Vertical Offset from crosshair to target (-20.5 degrees to 20.5 degrees)
-  double targetArea;   // target area (0% of image to 100%)
-  double skew;         // skew or rotation (-90 degrees to 0 degrees)
-  double pipeLatency;  // the pipeline's latency contribution (ms) add at least 11 ms for image capture latency
-  double tshort;       // Sidelength of shortest side of the fitted bounding box (pixels)
-  double tlong;        // Sidelength of longest side of the fitted bounding box (pixels)
-  double thor;         // Horizontal sidelength of the rough bounding box (0 - 320 pixels)
-  double tvert;        // Vertical sidelength of the rough bounding box (0 - 320 pixels)
-  double getpipe;      // True active pipeline index of the camera (0 .. 9)
-  double camtran;      // Results of a 3D position solution, 6 numbers: Translation (x,y,y) Rotation(pitch,yaw,roll)
+    // state vars
+    private NetworkTable limelightTable = null;
+    private Pipeline pipeline = Pipeline.CLOSE;
 
-  boolean lightOn = true;
-      // below group is used for generating drive and steer from vision
-  double LimelightDriveCommand;
-  double LimelightDriveMax = 0.4;
-  double LimelightSteerCommand;
-  // double Drive_K = 0.03;  // tune. Constant for generating drive speed from vision
-  // double Drive_D = 0.18;     // tune. Constant for generating drive speed from area errors in vision
-  double Drive_K = 0.0;  // tune. Constant for generating drive speed from vision
-  double Drive_D = 0;  
-  // double Steer_K = 0.075;  // tune. Constant for generating turn speed from vision. (OG) P: 0.07 D: 0.2
-  // double Steer_D = 0.3;
-  double Steer_K = 0.06;  // tune. Constant for generating turn speed from vision. (OG) P: 0.07 D: 0.2
-  double Steer_D = 0.2;
-  double Skew_P = 0.0;
-  double txError = 0;
-  double skewError = 0;
-  double prevSkew = 0;
-  double previoustxError = 0;
-  double deltatxError = 0;
-  double DesiredTargetArea = 7.67;  // this needs to be tuned to robot
-  double areaError = 0;   // just set to zero to start with 
-  double previousAreaError = 0; // same stroy as above
-  double deltaError = 0; // same story as above
-  double desiredSkew = 0;
+    /**
+     * Enum to control LED mode.
+     */
+    public enum LedMode {
+        DEFAULT(0), OFF(1), BLINK(2), ON(3);
 
- 
-  
-  
-  
-  public double GenerateDrive() {
-    areaError = DesiredTargetArea - getTargetArea();
-    if (areaError != previousAreaError){
-      deltaError = areaError - previousAreaError;
-    }
-    if (!isTargetValid()) {
-      LimelightDriveCommand = 0.0;
-    } else {
-      LimelightDriveCommand = (areaError * Drive_K) + (deltaError * Drive_D);
+        private final int value;
+        LedMode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+
     }
 
-    if (LimelightDriveCommand > LimelightDriveMax) {
-      LimelightDriveCommand = LimelightDriveMax;
+    /**
+     * Enum to control camera mode.
+     */
+    public enum CameraMode {
+        VISION(0), CAMERA(1);
+
+        private final int value;
+        CameraMode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
-    previousAreaError = areaError;
-    return LimelightDriveCommand;
-  }
 
-  public double GenerateSteer() {
-    txError = getXOffset();                              // I know that this may be slightly redundent but fight me!
-    if (txError != previoustxError){
-      deltatxError = txError - previoustxError;
+    // pipeline enum
+    public enum Pipeline {
+        CLOSE(0), ZOOM(1), OFF(2);
+
+        private final int value;
+
+        Pipeline(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
-    if (!isTargetValid()) {
-      LimelightSteerCommand = 0.0;
-    } else {
-      LimelightSteerCommand = (txError * Steer_K) + (deltatxError * Steer_D);
+
+    /**
+     * Constructor for Limelight.
+     */
+    public Limelight() {
+        limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
     }
-    previoustxError = txError;
-    return LimelightSteerCommand;
-  }
 
-
-
-  public boolean fetchUpdate() {
-    try {
-      validTarget = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-      xOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-      yOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    } catch(Exception ex) {
-      return false;
+    /**
+     * Runs every loop.
+     */
+    @Override
+    public void periodic() {
+        updateShuffleboard();
     }
-    return true;
-  }
 
-
-  public boolean isTargetValid() { 
-    if (validTarget > 0.5) 
-    {
-      return true;
-    } 
-    else
-    {
-      return false;
+    /**
+     * Writes values to Shuffleboard.
+     */
+    public void updateShuffleboard() {
+        SmartDashboard.putNumber("Formula RPM", formulaRpm());
+        SmartDashboard.putNumber("Direct line distance", getDistance());
     }
-  }
 
-  
-  public void getRawSkew() {
-    System.out.println(skew); 
-  }
-  
-  public double getXOffset() {
-    return xOffset;
-  }
-
-  public double getYOffset() {
-    return yOffset;
-  }
-
-  public double getTargetArea() {
-    return targetArea;
-  }
-
-
-
-
-  public void setLedMode(int ledMode) { // 0-use the LED mode set in the current pipeline   1-force off   2-force blink  3-force on
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(ledMode);
-  }
-
-  public double getLedMode() {
-    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").getDouble(0);
-  }
-
-  public void setCamMode(int camMode) { // 0-Vision processor   1-DriverCamera
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
-  }
-
-  public double getCamMode () {
-    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").getDouble(0);
-  }
-
-  public void setPipeLine(int pipeLine) { // 0 through 9 as pipeline
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(pipeLine);
-  }
-
-    // (stream modes) 0 - Standard: Side-by-side streams if a webcam is attached to Limelight
-    // 1 - Pip Main: the secondary camara stream is placed in the lower-right corner of the primary camera stream
-    // 2 - PiP Secondary: The primary camera stream is placed in the lower-right corner of the secondary camera stream
-  public void setStream(int streamMode) { 
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(streamMode);
-  }
-
-
-  public void PipelineOnPress(boolean button) {
-    if (button && (getCamMode() > 0.5)) {
-      setCamMode(0);
-    } else if (!button && (getCamMode() < 0.5)) {
-      setCamMode(1);
+    /**
+     * Sets the LED mode of the camera.
+     * @param mode - the LED mode to set the camera to
+     */
+    public void setLightMode(LedMode mode) {
+        limelightTable.getEntry("ledMode").setNumber(mode.getValue());
     }
-  }
 
-  public void turnOnLight(boolean button) {
-    if (button && (getLedMode() > 0.5)) {
-      setLedMode(0);
-    // } else if (!button && getLedMode() < 0.5) {
-    //   setLedMode(1);
+    /**
+     * Sets the camera mode of the camera.
+     * @param mode - the camera mode to set the camera to
+     */
+    public void setCameraMode(CameraMode mode) {
+        limelightTable.getEntry("camMode").setNumber(mode.getValue());
     }
-  }
 
-  public void lightToggle(boolean button) {
-    if(button) {
-      if(lightOn) {
-        lightOn = false;
-      } else {
-        lightOn = true;
-      }
+    /**
+     * Sets the pipeline of the camera.
+     * @param pl - the camera mode to set the camera to
+     */
+    public void setPipeline(Pipeline pl) {
+        limelightTable.getEntry("pipeline").setNumber(pl.getValue());
+        pipeline = pl;
     }
-    if(lightOn && (getLedMode() > 0.5)) {
-      setLedMode(0);
-    } 
-    else if(!lightOn && (getLedMode() < 0.5)) {
-      setLedMode(1);
-    }
-  }
 
+    /**
+     * Returns true if the camera sees a target.
+     */
+    public boolean hasTarget() {
+        return limelightTable.getEntry("tv").getBoolean(false);
+    }
+
+    /**
+     * Returns the vertical angle from the center of the camera to the target.
+     */
+    public double getVerticalAngle() {
+        return limelightTable.getEntry("ty").getDouble(0.0);
+    }
+
+    /**
+     * Returns the horizontal angle from the center of the camera to the target.
+     */
+    public double getHorizontalAngle() {
+        return limelightTable.getEntry("tx").getDouble(0.0);
+    }
+
+    /**
+     * Returns horizontal distance in feet from the target.
+     */
+    public double getDistance() {
+        return HEIGHT_DIFF / (Math.tan(Math.toRadians(getVerticalAngle() + CAMERA_ANGLE)));
+    }
+
+    /**
+     * Returns rpm to spin shooter to based on vision target formula.
+     */
+    public double formulaRpm() {
+        return (FORMULA_RATIO * getDistance()) + 3900;
+    }
+
+    /**
+     * Zooms in on target.
+     */
+    public void zoomTarget() {
+        setLightMode(LedMode.ON);
+        setCameraMode(CameraMode.VISION);
+        setPipeline(Pipeline.ZOOM);
+    }
+
+    /**
+     * Start tracking the vision targets.
+     */
+    public void trackTarget() {
+        setLightMode(LedMode.ON);
+        setCameraMode(CameraMode.VISION);
+        setPipeline(Pipeline.CLOSE);
+    }
+
+    /**
+     * Use LimeLight as camera.
+     */
+    public void useAsCamera() {
+        setLightMode(LedMode.OFF);
+        setCameraMode(CameraMode.CAMERA);
+        setPipeline(Pipeline.CLOSE);
+    }
+
+    /**
+     * Returns the pipeline the camera is running.
+     */
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
 
 }
