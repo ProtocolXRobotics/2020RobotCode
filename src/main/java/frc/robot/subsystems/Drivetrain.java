@@ -34,19 +34,31 @@ public class Drivetrain extends SubsystemBase {
   SpeedControllerGroup right = new SpeedControllerGroup(masterRight, slaveRight);
   SpeedControllerGroup left = new SpeedControllerGroup(masterLeft, slaveLeft);
   DifferentialDrive robotDrive = new DifferentialDrive(left, right);
-  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
-  CANEncoder leftEnc = masterLeft.getAlternateEncoder();
-  CANEncoder rightEnc = masterRight.getAlternateEncoder();
-  AHRS gyro = new AHRS(Port.kMXP);
+ // DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+  CANEncoder leftEnc = masterLeft.getEncoder();
+  CANEncoder rightEnc = masterRight.getEncoder();
+ // AHRS gyro = new AHRS(Port.kMXP);
   public boolean isQuickTurn = false;
   
   public Drivetrain() {
 
-    slaveLeft.follow(masterLeft);
-    slaveRight.follow(masterRight);
-    leftEnc.setVelocityConversionFactor(1); //Factor to convert RPM to ft/s
-    leftEnc.setPositionConversionFactor(1); //Convert Rotations to ft
-    rightEnc.setVelocityConversionFactor(1);
+    slaveLeft.follow(masterLeft, false);
+    slaveRight.follow(masterRight, false);
+
+    masterLeft.setInverted(true);
+    slaveLeft.setInverted(false);
+
+    masterRight.setInverted(true);
+    slaveRight.setInverted(false);
+
+    masterLeft.setSmartCurrentLimit(40);
+    masterRight.setSmartCurrentLimit(40);
+
+    
+    
+   // leftEnc.setVelocityConversionFactor(1); //Factor to convert RPM to ft/s
+    //leftEnc.setPositionConversionFactor(1); //Convert Rotations to ft
+    //rightEnc.setVelocityConversionFactor(1);
     rightEnc.setPositionConversionFactor(1);
 
   }
@@ -54,7 +66,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run\
-    odometry.update(Rotation2d.fromDegrees(getHeading()), leftEnc.getPosition(), rightEnc.getPosition());
+    //odometry.update(Rotation2d.fromDegrees(getHeading()), leftEnc.getPosition(), rightEnc.getPosition());
   }
 
   public void tankDrive(double leftPower, double rightPower, boolean squareInputs) {
@@ -77,19 +89,19 @@ public class Drivetrain extends SubsystemBase {
     return new DifferentialDriveWheelSpeeds(leftEnc.getVelocity(), rightEnc.getVelocity());
   }
 
-  public double getHeading() {
+/*  public double getHeading() {
     return gyro.getYaw();
   }
-
+*/
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     left.setVoltage(leftVolts);
     right.setVoltage(-rightVolts);
   }
 
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
+ /* public Pose2d getPose() {
+   // return odometry.getPoseMeters();
   }
-
+*/
   public void toggleQuickTurn() {
     if(isQuickTurn)
       isQuickTurn=false;

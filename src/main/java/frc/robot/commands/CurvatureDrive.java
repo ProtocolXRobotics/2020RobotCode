@@ -19,20 +19,21 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /**
  * An example command that uses an example subsystem.
  */
-public class ArcadeDrive extends CommandBase {
+public class CurvatureDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Drivetrain drivetrain;
-  private final XboxController driver;
+  private double speed;
+  private double rot;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDrive(XboxController driver1, Drivetrain drivetrain) {
+  public CurvatureDrive(double speed, double rot,  Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    this.driver = driver1;
-    // Use addRequirements() here to declare subsystem dependencies.
+    this.speed = speed;
+    this.rot = rot;    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
   }
 
@@ -45,7 +46,7 @@ public class ArcadeDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.arcadeDrive(-driver.getY(Hand.kLeft), -driver.getX(Hand.kRight), true);
+    drivetrain.curvatureDrive(speed, rot);
   }
 
   // Called once the command ends or is interrupted.

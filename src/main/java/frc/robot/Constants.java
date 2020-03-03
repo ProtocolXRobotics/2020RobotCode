@@ -20,17 +20,20 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static int masterLeftDrive = 0;
+    public static int masterLeftDrive = 5;
     public static int slaveLeftDrive = 1;
+
     public static int masterRightDrive = 2;
-    public static int slaveRightDrive = 3;
-    public static int masterShooter = 4;
-    public static int slaveShooter = 5;
-    public static int intakeMotor = 6;
-    public static int leftIndexer = 7;
-    public static int rightIndexer = 8;
-    public static int accelWheel = 9;
-    public static int belt = 10;
+    public static int slaveRightDrive = 4;
+
+    public static int masterShooter = 6;
+    public static int slaveShooter = 3;
+
+    public static int intakeMotor = 3;
+    public static int leftIndexer = 2;
+    public static int rightIndexer = 1;
+    public static int accelWheel = 0;
+
 
     public static int climb = 11;
     public static int winch = 12;

@@ -7,51 +7,48 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Drivetrain;
-
-
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.robot.subsystems.Beltevator;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ArcadeDrive extends CommandBase {
+public class Unjam extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Drivetrain drivetrain;
-  private final XboxController driver;
-
+  private final Beltevator beltevator;
+  private final Indexer indexer;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDrive(XboxController driver1, Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
-    this.driver = driver1;
+  public Unjam(Beltevator beltevator, Indexer indexer) {
+    this.beltevator = beltevator;
+    this.indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drivetrain);
+    addRequirements(indexer, beltevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drivetrain.stopDrive();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.arcadeDrive(-driver.getY(Hand.kLeft), -driver.getX(Hand.kRight), true);
+    beltevator.spinAccelWheel(-0.9);
+    indexer.setPower(0, 0.5);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetrain.stopDrive();
+    beltevator.spinAccelWheel(0);
+    indexer.setPower(0, 0);
   }
 
   // Returns true when the command should end.
@@ -60,4 +57,3 @@ public class ArcadeDrive extends CommandBase {
     return false;
   }
 }
-

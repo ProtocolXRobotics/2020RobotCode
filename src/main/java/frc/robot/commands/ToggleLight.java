@@ -7,51 +7,41 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Drivetrain;
-
-
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import frc.robot.subsystems.Limelight;
+
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ArcadeDrive extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Drivetrain drivetrain;
-  private final XboxController driver;
 
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public ArcadeDrive(XboxController driver1, Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
-    this.driver = driver1;
+public class ToggleLight extends CommandBase {
+  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+  private final Limelight limelight;
+  public ToggleLight(Limelight limelight) {
+    this.limelight = limelight;
+  
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drivetrain);
+    // Configure additional PID options by calling `getController` here.
+    addRequirements(limelight);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drivetrain.stopDrive();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.arcadeDrive(-driver.getY(Hand.kLeft), -driver.getX(Hand.kRight), true);
-  }
+    limelight.setLedMode(3);
 
+  }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetrain.stopDrive();
+    limelight.setLedMode(1);
   }
 
   // Returns true when the command should end.
@@ -60,4 +50,3 @@ public class ArcadeDrive extends CommandBase {
     return false;
   }
 }
-

@@ -19,18 +19,25 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.CurvatureDrive;
+import frc.robot.commands.Hopper;
 import frc.robot.commands.SetIntakeSpeed;
 import frc.robot.commands.SetShooterSpeed;
+import frc.robot.commands.ToggleLight;
+import frc.robot.commands.Unjam;
 import frc.robot.subsystems.Beltevator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -44,24 +51,25 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
   private final Beltevator beltevator = new Beltevator();
-  private final Climber climber = new Climber();
+  //private final Climber climber = new Climber();
+  private final Indexer indexer = new Indexer();
+  private final Limelight limelight = new Limelight();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
 
   
 
-  private Command baseline = new RunCommand(() -> drivetrain.arcadeDrive(0.5, 0, false)).withTimeout(3);
+ 
+  private ArcadeDrive arcadeDrive = new ArcadeDrive(driver, drivetrain);
 
-  
                                 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
-    drivetrain.setDefaultCommand(new ArcadeDrive(driver.getY(Hand.kLeft), driver.getX(Hand.kRight), drivetrain));
-
+    drivetrain.setDefaultCommand(arcadeDrive);
     configureButtonBindings();
     
   }
@@ -77,13 +85,24 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(intake::actuateIntake, intake));
 
     new JoystickButton(operator, Button.kBumperRight.value)
-        .toggleWhenPressed(new RunCommand(() -> intake.setPower(0.8)));
+        .toggleWhenPressed(new SetIntakeSpeed(intake, 0.6));
 
     new JoystickButton(operator, Button.kY.value)
-        .whileHeld(new SetShooterSpeed(shooter, 3500));
+        .whileHeld(new Hopper(beltevator,indexer));
     
     new JoystickButton(operator, Button.kX.value)
-        .whileHeld(new SetShooterSpeed(shooter, 5000));
+        .whileHeld(new SetShooterSpeed(shooter, 2500));
+
+    new JoystickButton(operator, Button.kB.value)
+        .whileHeld(new SetShooterSpeed(shooter, 4000)); 
+        
+        
+    new JoystickButton(driver, Button.kBumperLeft.value)
+        .whileHeld(new ToggleLight(limelight));  
+
+    new JoystickButton(operator, Button.kA.value)
+        .whileHeld(new Unjam(beltevator, indexer));  
+    
     
     
   }
@@ -105,7 +124,7 @@ public class RobotContainer {
                                        Constants.kaVoltSecondsSquaredPerMeter),
             Constants.kDriveKinematics,
             10);
-
+?
       TrajectoryConfig config =
         new TrajectoryConfig(Constants.maxSpeed,
                              Constants.maxAcceleration)
@@ -129,7 +148,8 @@ public class RobotContainer {
               drive::tankDriveVolts, 
               drive
               );     
-*/
+*/  Command baseline = new CurvatureDrive(-0.5, 0, drivetrain).withTimeout(2);
+
     return baseline;
   }
 }

@@ -19,7 +19,6 @@ public class Beltevator extends SubsystemBase {
    */
 
   VictorSPX accelWheel = new VictorSPX(Constants.accelWheel);
-  VictorSPX belt = new VictorSPX(Constants.belt);
 
   public Beltevator() {
    
@@ -29,10 +28,6 @@ public class Beltevator extends SubsystemBase {
     accelWheel.set(ControlMode.PercentOutput, power);
   }
 
-  public void elevate(double power) {
-    belt.set(ControlMode.PercentOutput, power);
-  }
-  
   
   @Override
   public void periodic() {

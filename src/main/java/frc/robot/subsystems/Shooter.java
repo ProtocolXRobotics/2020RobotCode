@@ -28,14 +28,20 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     double kP, kI, kD;
-    kP = 5e-5; 
-    kI = 1e-6;
+    kP = 5e-3; 
+    kI = 0;
     kD = 0; 
+    slaveShooter.follow(masterShooter, false);
+    masterShooter.setInverted(true);
+   // slaveShooter.setInverted(false);
     shooterPID.setP(kP);
     shooterPID.setI(kI);
     shooterPID.setD(kD);
+
     shooterPID.setOutputRange(0, 1);
-    slaveShooter.follow(masterShooter);
+    
+    
+    System.out.print("hell obetas");
     
   }
 

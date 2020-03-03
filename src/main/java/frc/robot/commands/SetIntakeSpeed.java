@@ -7,7 +7,10 @@
 
 package frc.robot.commands;
 
+import frc.robot.subsystems.Beltevator;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -38,11 +41,13 @@ public class SetIntakeSpeed extends CommandBase {
   @Override
   public void execute() {
     intake.setPower(power);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intake.setPower(0);
   }
 
   // Returns true when the command should end.

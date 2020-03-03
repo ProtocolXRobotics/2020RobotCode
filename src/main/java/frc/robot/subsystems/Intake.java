@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,8 +23,8 @@ public class Intake extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
-  DoubleSolenoid retractor1 = new DoubleSolenoid(Constants.retractorforward, Constants.retractorreverse);
-  DoubleSolenoid retractor2 = new DoubleSolenoid(Constants.retractorforward, Constants.retractorreverse);
+  Solenoid retractor1 = new Solenoid(0);
+  //DoubleSolenoid retractor2 = new DoubleSolenoid(1, 3);
   VictorSPX intakeMotor = new VictorSPX(Constants.intakeMotor);
 
   public Intake() {
@@ -34,13 +35,12 @@ public class Intake extends SubsystemBase {
     intakeMotor.set(ControlMode.PercentOutput, power);
   }
   public void actuateIntake() {
-    if(retractor1.get()==Value.kForward) {
-      retractor1.set(Value.kReverse);
-      retractor2.set(Value.kReverse);
+    if(retractor1.get()) {
+      retractor1.set(false);
     }
-    else if(retractor1.get()==Value.kReverse) {
-      retractor1.set(Value.kForward);
-      retractor2.set(Value.kForward);
+    else {
+      retractor1.set(true);
+
     }
   }
   
@@ -50,3 +50,56 @@ public class Intake extends SubsystemBase {
     
   }
 }
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
