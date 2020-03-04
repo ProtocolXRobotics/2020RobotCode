@@ -59,7 +59,7 @@ public class Drivetrain extends SubsystemBase {
    // leftEnc.setVelocityConversionFactor(1); //Factor to convert RPM to ft/s
     //leftEnc.setPositionConversionFactor(1); //Convert Rotations to ft
     //rightEnc.setVelocityConversionFactor(1);
-    rightEnc.setPositionConversionFactor(1);
+    //rightEnc.setPositionConversionFactor(1);
 
   }
 

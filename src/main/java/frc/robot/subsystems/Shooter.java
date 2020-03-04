@@ -31,9 +31,9 @@ public class Shooter extends SubsystemBase {
     kP = 5e-3; 
     kI = 0;
     kD = 0; 
-    slaveShooter.follow(masterShooter, false);
-    masterShooter.setInverted(true);
-   // slaveShooter.setInverted(false);
+    slaveShooter.follow(masterShooter, true);
+   // masterShooter.setInverted(true);
+  
     shooterPID.setP(kP);
     shooterPID.setI(kI);
     shooterPID.setD(kD);
