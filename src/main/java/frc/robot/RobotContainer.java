@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConst
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.CurvatureDrive;
 import frc.robot.commands.Hopper;
+import frc.robot.commands.LimelightAlign;
 import frc.robot.commands.SetIntakeSpeed;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.Unjam;
@@ -96,9 +97,8 @@ public class RobotContainer {
         .whileHeld(new SetShooterSpeed(shooter,4000)); 
         
         
-    /*new JoystickButton(driver, Button.kBumperLeft.value)
-        .whileHeld(new ToggleLight(limelight));  
-        */
+    new JoystickButton(driver, Button.kBumperLeft.value)
+        .whileHeld(new LimelightAlign(limelight, drivetrain));  
 
     new JoystickButton(operator, Button.kA.value)
         .whileHeld(new Unjam(beltevator, indexer));  
