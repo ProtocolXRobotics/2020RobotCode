@@ -7,6 +7,11 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -14,8 +19,11 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import frc.robot.commands.ArcadeDrive;
@@ -59,7 +67,7 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
 
   
-
+  SendableChooser<Integer> autonomousSelector;
  
   private ArcadeDrive arcadeDrive = new ArcadeDrive(driver, drivetrain);
 
@@ -71,6 +79,14 @@ public class RobotContainer {
     // Configure the button bindings
     drivetrain.setDefaultCommand(arcadeDrive);
     configureButtonBindings();
+
+    autonomousSelector = new SendableChooser<Integer>();
+
+    autonomousSelector.addOption("Drive Foward", 0);
+    autonomousSelector.addOption("Drive and Shoot Pos 1", 1);
+    autonomousSelector.addOption("Drive and Shoot Pos 2", 2);
+    autonomousSelector.addOption("Drive and Shoot Pos 3", 3);
+    SmartDashboard.putData("Autonomous Selector", autonomousSelector);
     
   }
 
@@ -116,39 +132,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    /*
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(Constants.ksVolts,
-                                       Constants.kvVoltSecondsPerMeter,
-                                       Constants.kaVoltSecondsSquaredPerMeter),
-            Constants.kDriveKinematics,
-            10);
-?
-      TrajectoryConfig config =
-        new TrajectoryConfig(Constants.maxSpeed,
-                             Constants.maxAcceleration)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(Constants.kDriveKinematics)
-                // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
-            //Trajectory exampleTrajectory = TrajectoryUtil.fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/example.wpilib.json"));
-
-            RamseteCommand ramsyeet = new RamseteCommand(
-              exampleTrajectory,
-              drive::getPose,
-              new RamseteController(Constants.ramseteB, Constants.ramseteZeta),
-              new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeter,
-              Constants.kaVoltSecondsSquaredPerMeter),
-              Constants.kDriveKinematics, 
-              drive::getWheelSpeeds,
-              new PIDController(Constants.kPDriveVel, 0, 0), //Check which pid controller to import
-              new PIDController(Constants.kPDriveVel, 0, 0),
-              // RamseteCommand passes volts to the callback
-              drive::tankDriveVolts, 
-              drive
-              );     
-*/  Command baseline = new CurvatureDrive(-0.5, 0, drivetrain).withTimeout(2);
+    
+        
+   Command baseline = new CurvatureDrive(-0.5, 0, drivetrain).withTimeout(2);
 
     return baseline;
   }

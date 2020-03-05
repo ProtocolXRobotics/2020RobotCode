@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -38,28 +39,29 @@ public final class Constants {
     public static int climb = 11;
     public static int winch = 12;
 
-    public static int turret = 15;
     
     // Use Drive Characterization to find these constants
     public static final double ksVolts = 0.22;
     public static final double kvVoltSecondsPerMeter = 1.98;
     public static final double kaVoltSecondsSquaredPerMeter = 0.2;
     public static final double kPDriveVel = 8.5;
+    public static final double kDDriveVel = 8.5;
 
     public static final double trackwidth = 2;
-    public static final double maxSpeed = 10;
-    public static final double maxAcceleration = 4;
-    public static final double ramseteB = 2;
-    public static final double ramseteZeta = 0.7;
+
+    public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(12.0);; // m/s
+    public static final double kMaxAccelerationMetersPerSecondSquared = Units.feetToMeters(4); // m/s^2
+
+    public static final double kMinSpeedMetersPerSecond = Units.feetToMeters(8.0); //Find good value
+    public static final double kMinAccelerationMetersPerSecondSquared = Units.feetToMeters(6.0);
+    
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(Constants.trackwidth);
 
     public static final int retractorforward = 0;
     public static final int retractorreverse = 1;
 
-    //Limelight
-    public static final double kLimelightHeight = 24; // In inches
-    public static final double kLimelightAngle = 30; // In degrees
-    public static final double kPortHeight = 98.25; // In inches
 
 
    

@@ -40,6 +40,8 @@ public class Drivetrain extends SubsystemBase {
   CANEncoder rightEnc = masterRight.getEncoder();
   AHRS gyro = new AHRS(SPI.Port.kMXP);
   public boolean isQuickTurn = false;
+  final double DRIVE_WHEEL_DIAM_M = 0.127;
+  final double DRIVE_GEARBOX_REDUCTION = 8.01;
   
   public Drivetrain() {
     slaveLeft.follow(masterLeft, false);
@@ -56,17 +58,19 @@ public class Drivetrain extends SubsystemBase {
 
     
     
-   // leftEnc.setVelocityConversionFactor(1); //Factor to convert RPM to ft/s
-    //leftEnc.setPositionConversionFactor(1); //Convert Rotations to ft
-    //rightEnc.setVelocityConversionFactor(1);
-    rightEnc.setPositionConversionFactor(1);
+    leftEnc.setPositionConversionFactor(Math.PI * DRIVE_WHEEL_DIAM_M / DRIVE_GEARBOX_REDUCTION);
+    rightEnc.setPositionConversionFactor(Math.PI * DRIVE_WHEEL_DIAM_M / DRIVE_GEARBOX_REDUCTION); //Factor to convert RPM to m/s
+    leftEnc.setVelocityConversionFactor(Math.PI * DRIVE_WHEEL_DIAM_M / 60.0 / DRIVE_GEARBOX_REDUCTION);
+    rightEnc.setVelocityConversionFactor(Math.PI * DRIVE_WHEEL_DIAM_M / 60.0 / DRIVE_GEARBOX_REDUCTION);
+
+    
 
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run\
-    //odometry.update(Rotation2d.fromDegrees(getHeading()), leftEnc.getPosition(), rightEnc.getPosition());
+    odometry.update(Rotation2d.fromDegrees(getHeading()), leftEnc.getPosition(), rightEnc.getPosition());
   }
 
   public void tankDrive(double leftPower, double rightPower, boolean squareInputs) {
@@ -78,7 +82,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void stopDrive() {
-    robotDrive.arcadeDrive(0, 0);
+    robotDrive.tankDrive(0, 0);
   }
 
   public void curvatureDrive(double speed, double turn) {
@@ -109,9 +113,11 @@ public class Drivetrain extends SubsystemBase {
       isQuickTurn=true;
   }
 
-  private void zeroDriveTrainEncoders() {
+  private void resetOdometry() {
     leftEnc.setPosition(0);
     rightEnc.setPosition(0);
+    gyro.zeroYaw();
+   
   }
 
 
