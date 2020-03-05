@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.SPI;
 
 public class Drivetrain extends SubsystemBase {
   /**
@@ -34,14 +35,13 @@ public class Drivetrain extends SubsystemBase {
   SpeedControllerGroup right = new SpeedControllerGroup(masterRight, slaveRight);
   SpeedControllerGroup left = new SpeedControllerGroup(masterLeft, slaveLeft);
   DifferentialDrive robotDrive = new DifferentialDrive(left, right);
- // DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
   CANEncoder leftEnc = masterLeft.getEncoder();
   CANEncoder rightEnc = masterRight.getEncoder();
- // AHRS gyro = new AHRS(Port.kMXP);
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
   public boolean isQuickTurn = false;
   
   public Drivetrain() {
-
     slaveLeft.follow(masterLeft, false);
     slaveRight.follow(masterRight, false);
 
@@ -89,24 +89,29 @@ public class Drivetrain extends SubsystemBase {
     return new DifferentialDriveWheelSpeeds(leftEnc.getVelocity(), rightEnc.getVelocity());
   }
 
-/*  public double getHeading() {
+  public double getHeading() {
     return gyro.getYaw();
   }
-*/
+
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     left.setVoltage(leftVolts);
     right.setVoltage(-rightVolts);
   }
 
- /* public Pose2d getPose() {
-   // return odometry.getPoseMeters();
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
   }
-*/
+
   public void toggleQuickTurn() {
     if(isQuickTurn)
       isQuickTurn=false;
     else
       isQuickTurn=true;
+  }
+
+  private void zeroDriveTrainEncoders() {
+    leftEnc.setPosition(0);
+    rightEnc.setPosition(0);
   }
 
 

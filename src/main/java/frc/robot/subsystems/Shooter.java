@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +26,12 @@ public class Shooter extends SubsystemBase {
   CANSparkMax slaveShooter = new CANSparkMax(Constants.slaveShooter, MotorType.kBrushless);
   CANPIDController shooterPID = masterShooter.getPIDController();
   CANEncoder shooterEnc = masterShooter.getEncoder();
+  double kS = 0.0;
+  double kV = 0.0;
+  double kA = 0.0;
+
+  private final SimpleMotorFeedforward motorFeedForward = 
+      new SimpleMotorFeedforward(kS, kV, kA);
 
   public Shooter() {
     double kP, kI, kD;
@@ -39,14 +46,20 @@ public class Shooter extends SubsystemBase {
     shooterPID.setD(kD);
 
     shooterPID.setOutputRange(0, 1);
+    masterShooter.setSmartCurrentLimit(40);
+    masterShooter.setClosedLoopRampRate(0.2);
     
     
-    System.out.print("hell obetas");
+    
     
   }
 
   public void setVelocity(double RPM) {
     shooterPID.setReference(RPM, ControlType.kVelocity);
+}
+
+public void setVelocityFeedforward(double RPM) {
+  shooterPID.setReference(RPM, ControlType.kVelocity, 0, motorFeedForward.calculate(RPM, RPM-shooterEnc.getVelocity()));
 }
 
 public void setPower(double power) {

@@ -7,41 +7,47 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Shooter;
 
 
 /**
  * An example command that uses an example subsystem.
  */
-/*
-public class ToggleLight extends CommandBase {
+
+public class LimelightShoot extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Limelight limelight;
-  public ToggleLight(Limelight limelight) {
+  private final Shooter shooter;
+  public LimelightShoot(Limelight limelight, Shooter shooter) {
     this.limelight = limelight;
+    this.shooter = shooter;
   
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    addRequirements(limelight);
+    addRequirements(limelight, shooter);
   }
 
   @Override
   public void initialize() {
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    limelight.setLedMode(3);
+    double RPM = limelight.formulaRpm();
+    shooter.setVelocityFeedforward(RPM);
+    
+    
 
   }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    limelight.setLedMode(1);
+    shooter.setPower(0.0);
+
   }
 
   // Returns true when the command should end.
@@ -50,4 +56,3 @@ public class ToggleLight extends CommandBase {
     return false;
   }
 }
-*/

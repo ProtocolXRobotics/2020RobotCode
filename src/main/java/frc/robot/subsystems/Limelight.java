@@ -65,40 +65,6 @@ public class Limelight extends SubsystemBase {
             return this.value;
         }
     }
-<<<<<<< HEAD
-
-    // pipeline enum
-    public enum Pipeline {
-        CLOSE(0), ZOOM(1), OFF(2);
-
-        private final int value;
-
-        Pipeline(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return this.value;
-        }
-    }
-
-    /**
-     * Constructor for Limelight.
-     */
-    public Limelight() {
-        limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    }
-
-    /**
-     * Runs every loop.
-     */
-    @Override
-    public void periodic() {
-        updateShuffleboard();
-    }
-
-    /**
-=======
 
     // pipeline enum
     public enum Pipeline {
@@ -131,102 +97,11 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
->>>>>>> 369d866750e0137c44362ff06a25416bb7438c9f
      * Writes values to Shuffleboard.
      */
     public void updateShuffleboard() {
         SmartDashboard.putNumber("Formula RPM", formulaRpm());
         SmartDashboard.putNumber("Direct line distance", getDistance());
-<<<<<<< HEAD
-    }
-
-    /**
-     * Sets the LED mode of the camera.
-     * @param mode - the LED mode to set the camera to
-     */
-    public void setLightMode(LedMode mode) {
-        limelightTable.getEntry("ledMode").setNumber(mode.getValue());
-    }
-
-    /**
-     * Sets the camera mode of the camera.
-     * @param mode - the camera mode to set the camera to
-     */
-    public void setCameraMode(CameraMode mode) {
-        limelightTable.getEntry("camMode").setNumber(mode.getValue());
-    }
-
-    /**
-     * Sets the pipeline of the camera.
-     * @param pl - the camera mode to set the camera to
-     */
-    public void setPipeline(Pipeline pl) {
-        limelightTable.getEntry("pipeline").setNumber(pl.getValue());
-        pipeline = pl;
-    }
-
-    /**
-     * Returns true if the camera sees a target.
-     */
-    public boolean hasTarget() {
-        return limelightTable.getEntry("tv").getBoolean(false);
-    }
-
-    /**
-     * Returns the vertical angle from the center of the camera to the target.
-     */
-    public double getVerticalAngle() {
-        return limelightTable.getEntry("ty").getDouble(0.0);
-    }
-
-    /**
-     * Returns the horizontal angle from the center of the camera to the target.
-     */
-    public double getHorizontalAngle() {
-        return limelightTable.getEntry("tx").getDouble(0.0);
-    }
-
-    /**
-     * Returns horizontal distance in feet from the target.
-     */
-    public double getDistance() {
-        return HEIGHT_DIFF / (Math.tan(Math.toRadians(getVerticalAngle() + CAMERA_ANGLE)));
-    }
-
-    /**
-     * Returns rpm to spin shooter to based on vision target formula.
-     */
-    public double formulaRpm() {
-        return (FORMULA_RATIO * getDistance()) + 3900;
-    }
-
-    /**
-     * Zooms in on target.
-     */
-    public void zoomTarget() {
-        setLightMode(LedMode.ON);
-        setCameraMode(CameraMode.VISION);
-        setPipeline(Pipeline.ZOOM);
-    }
-
-    /**
-     * Start tracking the vision targets.
-     */
-    public void trackTarget() {
-        setLightMode(LedMode.ON);
-        setCameraMode(CameraMode.VISION);
-        setPipeline(Pipeline.CLOSE);
-    }
-
-    /**
-     * Use LimeLight as camera.
-     */
-    public void useAsCamera() {
-        setLightMode(LedMode.OFF);
-        setCameraMode(CameraMode.CAMERA);
-        setPipeline(Pipeline.CLOSE);
-    }
-=======
     }
 
     /**
@@ -329,7 +204,6 @@ public class Limelight extends SubsystemBase {
         previoustxError = txError;
         return LimelightSteerCommand;
       }
->>>>>>> 369d866750e0137c44362ff06a25416bb7438c9f
 
     /**
      * Returns the pipeline the camera is running.

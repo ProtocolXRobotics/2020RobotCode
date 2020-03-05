@@ -10,7 +10,6 @@ package frc.robot.commands;
 import frc.robot.subsystems.Drivetrain;
 
 
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
