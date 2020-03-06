@@ -94,7 +94,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getHeading() {
-    return gyro.getYaw();
+    return 1.0;
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {

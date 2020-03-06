@@ -20,14 +20,14 @@ public class Limelight extends SubsystemBase {
     private static final double TAPE_HEIGHT = 2.5 / 2.0; // between bottom and top, feet
     private static final double SHOOTER_HEIGHT = 1.8; // feet
     private static final double HEIGHT_DIFF = PORT_HEIGHT - SHOOTER_HEIGHT; // feet
-    private static final double CAMERA_ANGLE = 60; // degrees
+    private static final double CAMERA_ANGLE = 30; // degrees
 
     double LimelightSteerCommand;
     double previoustxError = 0;
     double txError = 0;
     double deltatxError = 0;
-    double Steer_K = 0.03; 
-    double Steer_D = 0;  
+    double Steer_K = 0.04; 
+    double Steer_D = 0.0;  
 
     // state vars
     private NetworkTable limelightTable = null;
@@ -133,7 +133,12 @@ public class Limelight extends SubsystemBase {
      * Returns true if the camera sees a target.
      */
     public boolean hasTarget() {
-        return limelightTable.getEntry("tv").getBoolean(false);
+        if (limelightTable.getEntry("tv").getDouble(0) == 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -192,7 +197,7 @@ public class Limelight extends SubsystemBase {
     }
 
     public double GenerateSteer() {
-        txError = getHorizontalAngle();                              // I know that this may be slightly redundent but fight me!
+        txError = -getHorizontalAngle();             // I know that this may be slightly redundent but fight me!
         if (txError != previoustxError){
           deltatxError = txError - previoustxError;
         }

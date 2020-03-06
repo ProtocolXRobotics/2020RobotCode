@@ -26,20 +26,20 @@ public class Shooter extends SubsystemBase {
   CANSparkMax slaveShooter = new CANSparkMax(Constants.slaveShooter, MotorType.kBrushless);
   CANPIDController shooterPID = masterShooter.getPIDController();
   CANEncoder shooterEnc = masterShooter.getEncoder();
-  double kS = 0.0;
-  double kV = 0.0;
-  double kA = 0.0;
+  double kS = 0.14;
+  double kV = 0.0644;
+  double kA = 0.121;
 
   private final SimpleMotorFeedforward motorFeedForward = 
       new SimpleMotorFeedforward(kS, kV, kA);
 
   public Shooter() {
     double kP, kI, kD;
-    kP = 5e-3; 
+    kP = 0; 
     kI = 0;
     kD = 0; 
     slaveShooter.follow(masterShooter, true);
-   // masterShooter.setInverted(true);
+    masterShooter.setInverted(true);
   
     shooterPID.setP(kP);
     shooterPID.setI(kI);
@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
 }
 
 public void setVelocityFeedforward(double RPM) {
-  shooterPID.setReference(RPM, ControlType.kVelocity, 0, motorFeedForward.calculate(RPM, RPM-shooterEnc.getVelocity()));
+  shooterPID.setReference(RPM, ControlType.kVelocity, 0, motorFeedForward.calculate(RPM/60, (RPM-shooterEnc.getVelocity())/60));
 }
 
 public void setPower(double power) {
