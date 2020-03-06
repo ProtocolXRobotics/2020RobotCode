@@ -38,6 +38,7 @@ public class LimelightAlign extends CommandBase {
   @Override
   public void execute() {
     double steer_cmd = limelight.GenerateSteer();
+    System.out.println(steer_cmd);
     drivetrain.arcadeDrive(0, steer_cmd, true);
     
 
