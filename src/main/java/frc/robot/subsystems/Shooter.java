@@ -50,8 +50,6 @@ public class Shooter extends SubsystemBase {
     masterShooter.setClosedLoopRampRate(0.2);
     
     
-    
-    
   }
 
   public void setVelocity(double RPM) {

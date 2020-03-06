@@ -8,9 +8,15 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.commands.ActuateIntake;
+import frc.robot.commands.Hopper;
+import frc.robot.commands.LimelightAlign;
 import frc.robot.commands.SetIntakeSpeed;
+import frc.robot.subsystems.Beltevator;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 
 
@@ -18,42 +24,51 @@ public class Trench8Ball extends SequentialCommandGroup {
     /**
      * Add your docs here.
      */
-    public Trench8Ball(Drivetrain drivetrian, Intake intake, Shooter shooter, Trajectories trajectories) {
+    public Trench8Ball(Drivetrain drivetrain, Intake intake, Shooter shooter, Indexer indexer, Beltevator beltevator, Limelight limelight, Trajectories trajectories) {
         addCommands(
+                new AutoShoot(shooter, 1000), //Start spinning shooter
                 new ParallelDeadlineGroup(
-                new WaitCommand(3.5), 
-                new AutoShoot(shooter, 3000)),
-                //Intake in Parallel
+                new WaitCommand(2), 
+                new LimelightAlign(limelight, drivetrain)), // Wait for shooter to spin up and align with limelight
+                new Hopper(beltevator, indexer).withTimeout(3), //Unload balls
+                new AutoShoot(shooter, 0), // Set shooter back to 0
+                new ActuateIntake(intake), // Drop intake out
+                //Drive thru trench and intake in Parallel
                 new ParallelDeadlineGroup(
                         new RamseteCommand(
                         trajectories.getCenterStartToEndOfTrench(),
-                        drivetrian::getPose,
+                        drivetrain::getPose,
                         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
                         new SimpleMotorFeedforward(Constants.ksVolts,
                                 Constants.kvVoltSecondsPerMeter,
                                 Constants.kaVoltSecondsSquaredPerMeter),
                         Constants.kDriveKinematics,
-                        drivetrian::getWheelSpeeds,
+                        drivetrain::getWheelSpeeds,
                         new PIDController(Constants.kPDriveVel, 0, Constants.kDDriveVel),
                         new PIDController(Constants.kPDriveVel, 0, Constants.kDDriveVel),
                         // RamseteCommand passes volts to the callback
-                        drivetrian::tankDriveVolts,
-                        drivetrian), 
+                        drivetrain::tankDriveVolts,
+                        drivetrain), 
                         new SetIntakeSpeed(intake, 0.8)),
                 new RamseteCommand(
                         trajectories.getEndOfTrenchToStartOfTrench(),
-                        drivetrian::getPose,
+                        drivetrain::getPose,
                         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
                         new SimpleMotorFeedforward(Constants.ksVolts,
                                 Constants.kvVoltSecondsPerMeter,
                                 Constants.kaVoltSecondsSquaredPerMeter),
                         Constants.kDriveKinematics,
-                        drivetrian::getWheelSpeeds,
+                        drivetrain::getWheelSpeeds,
                         new PIDController(Constants.kPDriveVel, 0, Constants.kDDriveVel),
                         new PIDController(Constants.kPDriveVel, 0, Constants.kDDriveVel),
                         // RamseteCommand passes volts to the callback
-                        drivetrian::tankDriveVolts,
-                        drivetrian)
+                        drivetrain::tankDriveVolts,
+                        drivetrain),
+                new AutoLimelightShoot(drivetrain, limelight, shooter), //Turn to target and spin up to RPM based off formula
+                new WaitCommand(1),
+                new Hopper(beltevator, indexer).withTimeout(3), //Unload balls
+                new AutoShoot(shooter, 0)
+                
         );
     }
 }

@@ -7,45 +7,56 @@
 
 package frc.robot.auto;
 
-
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class AutoShoot extends CommandBase {
+public class AutoLimelightShoot extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter shooter;
-  private final double RPM;
+  private final Limelight limelight;
+  private final Drivetrain drivetrain;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutoShoot(Shooter shooter, double RPM) {
+  public AutoLimelightShoot(Drivetrain drivetrain, Limelight limelight, Shooter shooter) {
     this.shooter = shooter;
-    this.RPM = RPM;
+    this.limelight = limelight;
+    this.drivetrain = drivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter);
+    addRequirements(limelight, shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.setVelocity(RPM);
+    limelight.trackTarget();
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double steer_cmd = limelight.GenerateSteer();
+    drivetrain.arcadeDrive(0, steer_cmd, true);
+    if(steer_cmd < 0.05) {
+      double RPM = limelight.formulaRpm();
+      shooter.setVelocity(RPM);
+    }
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drivetrain.stopDrive();
+    limelight.useAsCamera();
     
   }
 
