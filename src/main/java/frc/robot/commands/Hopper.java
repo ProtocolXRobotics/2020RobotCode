@@ -39,7 +39,7 @@ public class Hopper extends CommandBase {
   @Override
   public void execute() {
     beltevator.spinAccelWheel(0.9);
-    indexer.setPower(0.5, -0.5);
+    indexer.setPower(0.5, 0.5);
 
   }
 

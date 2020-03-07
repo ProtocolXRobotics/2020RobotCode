@@ -103,7 +103,7 @@ public class RobotContainer {
         .whileHeld(new Hopper(beltevator,indexer));
     
     new JoystickButton(operator, Button.kX.value)
-        .whileHeld(new SetShooterSpeed(shooter, 2500));
+        .whileHeld(new SetShooterSpeed(shooter, 1500));
 
     new JoystickButton(operator, Button.kB.value)
         .whileHeld(new SetShooterSpeed(shooter,4000)); 

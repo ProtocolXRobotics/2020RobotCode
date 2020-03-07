@@ -26,24 +26,27 @@ public class Shooter extends SubsystemBase {
   CANSparkMax slaveShooter = new CANSparkMax(Constants.slaveShooter, MotorType.kBrushless);
   CANPIDController shooterPID = masterShooter.getPIDController();
   CANEncoder shooterEnc = masterShooter.getEncoder();
-  double kS = 0.14;
-  double kV = 0.0644;
-  double kA = 0.121;
+  double kS = 0.132;
+  double kV = 0.7;
+  double kA = 0.123;
 
   private final SimpleMotorFeedforward motorFeedForward = 
       new SimpleMotorFeedforward(kS, kV, kA);
 
   public Shooter() {
-    double kP, kI, kD;
-    kP = 0; 
-    kI = 0;
-    kD = 0; 
+    double kP, kI, kD, kF;
+    
+    kP = 0.00175; // p = .0005 (with target at x3/2)
+    kI = 1e-6;
+    kD = 1e-10;
+    kF = 0;
     slaveShooter.follow(masterShooter, true);
     masterShooter.setInverted(true);
   
     shooterPID.setP(kP);
     shooterPID.setI(kI);
     shooterPID.setD(kD);
+    shooterPID.setFF(kF);
 
     shooterPID.setOutputRange(0, 1);
     masterShooter.setSmartCurrentLimit(40);
@@ -54,10 +57,50 @@ public class Shooter extends SubsystemBase {
 
   public void setVelocity(double RPM) {
     shooterPID.setReference(RPM, ControlType.kVelocity);
+    SmartDashboard.putNumber("Error", RPM - shooterEnc.getVelocity());
 }
 
 public void setVelocityFeedforward(double RPM) {
   shooterPID.setReference(RPM, ControlType.kVelocity, 0, motorFeedForward.calculate(RPM/60, (RPM-shooterEnc.getVelocity())/60));
+}
+
+public void takeBackHalf(double RPM) {
+  double motorPower, gain, lastError, tbh;
+  tbh = 0;
+  lastError = 0.0;
+  motorPower = 0.0;
+  gain = 1e3;
+  double error = RPM - shooterEnc.getVelocity();
+  
+		
+  motorPower += gain * error;
+
+  motorPower = clamp(motorPower);
+
+  //If the error has changed in sign since the last processing
+  if (isPositive(lastError) != isPositive(error)) {
+      motorPower = 0.5 * (motorPower + tbh);
+      tbh = motorPower;
+
+      lastError = error;
+  }
+
+  masterShooter.set(motorPower);
+
+}
+
+private static double clamp(double input) {
+    if (input > 1) {
+        return 1;
+    }
+    if (input < -1) {
+        return -1;
+    }
+    return input;
+}
+
+private static boolean isPositive(double input) {
+  return input > 0;
 }
 
 public void setPower(double power) {
@@ -67,5 +110,6 @@ public void setPower(double power) {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Velocity", shooterEnc.getVelocity());
+   
   }
 }

@@ -38,7 +38,7 @@ public class SetShooterSpeed extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocityFeedforward(RPM);
+    shooter.setVelocity(RPM);
 
   }
 

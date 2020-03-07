@@ -36,7 +36,7 @@ public class Baseline extends SequentialCommandGroup {
                 //Drive thru trench and intake in Parallel
                 new ParallelDeadlineGroup(
                         new RamseteCommand(
-                        trajectories.getCenterStartToEndOfTrench(),
+                        trajectories.getDriveStraight(),
                         drivetrain::getPose,
                         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
                         new SimpleMotorFeedforward(Constants.ksVolts,
