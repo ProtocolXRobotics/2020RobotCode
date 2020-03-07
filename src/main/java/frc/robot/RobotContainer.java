@@ -10,22 +10,18 @@ package frc.robot;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.ctre.phoenix.motion.TrajectoryPoint;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import frc.robot.auto.Trajectories;
+import frc.robot.auto.Trench8Ball;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.CurvatureDrive;
 import frc.robot.commands.Hopper;
@@ -62,12 +58,13 @@ public class RobotContainer {
   //private final Climber climber = new Climber();
   private final Indexer indexer = new Indexer();
   private final Limelight limelight = new Limelight();
+  private final Trajectories trajectories = new Trajectories();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
 
   
-  SendableChooser<Integer> autonomousSelector;
+  SendableChooser<Command> autonomousSelector;
  
   private ArcadeDrive arcadeDrive = new ArcadeDrive(driver, drivetrain);
 
@@ -80,12 +77,11 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(arcadeDrive);
     configureButtonBindings();
 
-    autonomousSelector = new SendableChooser<Integer>();
+    autonomousSelector = new SendableChooser<Command>();
 
-    autonomousSelector.addOption("Drive Foward", 0);
-    autonomousSelector.addOption("Drive and Shoot Pos 1", 1);
-    autonomousSelector.addOption("Drive and Shoot Pos 2", 2);
-    autonomousSelector.addOption("Drive and Shoot Pos 3", 3);
+    autonomousSelector.addOption("Trench 8 Ball Auto", new Trench8Ball(drivetrain, intake, shooter, indexer, beltevator, limelight, trajectories));
+    //autonomousSelector.addOption("Drive Straight Test", );
+
     SmartDashboard.putData("Autonomous Selector", autonomousSelector);
     
   }

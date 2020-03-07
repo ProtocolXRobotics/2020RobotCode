@@ -72,9 +72,9 @@ public class Trajectories {
                     new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0),
                             new Rotation2d(Units.radiansToDegrees(0))),
                     List.of(
-                            new Translation2d(Units.inchesToMeters(60), Units.inchesToMeters(0))
+                            new Translation2d(Units.inchesToMeters(30), Units.inchesToMeters(0))
                     ),
-                    new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(0),
+                    new Pose2d(Units.inchesToMeters(60), Units.inchesToMeters(0),
                             new Rotation2d(Units.radiansToDegrees(0))),
                     // Pass config
                     forwardConfigFast
@@ -83,10 +83,10 @@ public class Trajectories {
 
         public Trajectory getDriveStraightReversed(){
             return edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator.generateTrajectory(
-                    new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(0),
+                    new Pose2d(Units.inchesToMeters(60), Units.inchesToMeters(0),
                             new Rotation2d(Units.radiansToDegrees(0))),
                     List.of(
-                            new Translation2d(Units.inchesToMeters(60), Units.inchesToMeters(0))
+                            new Translation2d(Units.inchesToMeters(30), Units.inchesToMeters(0))
                     ),
                     new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0),
                             new Rotation2d(Units.radiansToDegrees(0))),
