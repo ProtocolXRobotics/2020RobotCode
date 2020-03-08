@@ -37,8 +37,8 @@ public class Shooter extends SubsystemBase {
     double kP, kI, kD, kF;
     
     kP = 0.00175; // p = .0005 (with target at x3/2)
-    kI = 1e-6;
-    kD = 1e-10;
+    kI = 2.2e-7;
+    kD = 1e-11;
     kF = 0;
     slaveShooter.follow(masterShooter, true);
     masterShooter.setInverted(true);
