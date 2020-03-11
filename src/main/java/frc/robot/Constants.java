@@ -50,10 +50,10 @@ public final class Constants {
     public static final double trackwidth = 2;
 
     public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(12.0);; // m/s
-    public static final double kMaxAccelerationMetersPerSecondSquared = Units.feetToMeters(4); // m/s^2
+    public static final double kMaxAccelerationMetersPerSecondSquared = Units.feetToMeters(8); // m/s^2
 
     public static final double kMinSpeedMetersPerSecond = Units.feetToMeters(8.0); //Find good value
-    public static final double kMinAccelerationMetersPerSecondSquared = Units.feetToMeters(6.0);
+    public static final double kMinAccelerationMetersPerSecondSquared = Units.feetToMeters(4.0);
     
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;

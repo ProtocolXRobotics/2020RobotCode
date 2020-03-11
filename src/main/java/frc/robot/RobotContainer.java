@@ -7,19 +7,15 @@
 
 package frc.robot;
 
-import java.io.IOException;
-import java.nio.file.Path;
 
-import com.ctre.phoenix.motion.TrajectoryPoint;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.auto.Baseline;
 import frc.robot.auto.Trajectories;
 import frc.robot.auto.Trench8Ball;
 import frc.robot.commands.ArcadeDrive;
@@ -63,6 +59,8 @@ public class RobotContainer {
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
 
+  //private final Joystick driver1 = new Joystick(3);
+  //private final Joystick driver2 = new Joystick(4);
   
   SendableChooser<Command> autonomousSelector;
  
@@ -80,7 +78,9 @@ public class RobotContainer {
     autonomousSelector = new SendableChooser<Command>();
 
     autonomousSelector.addOption("Trench 8 Ball Auto", new Trench8Ball(drivetrain, intake, shooter, indexer, beltevator, limelight, trajectories));
-    //autonomousSelector.addOption("Drive Straight Test", );
+    autonomousSelector.addOption("Shoot + Baselinet", new Baseline(drivetrain, intake, shooter, indexer, beltevator, limelight, trajectories));
+    autonomousSelector.addOption("Stupid Straight", new CurvatureDrive(-0.5, 0, drivetrain).withTimeout(2));
+    
 
     SmartDashboard.putData("Autonomous Selector", autonomousSelector);
     
@@ -117,6 +117,8 @@ public class RobotContainer {
     
     
     
+    
+    
   }
 
 
@@ -128,10 +130,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    
-        
-   Command baseline = new CurvatureDrive(-0.5, 0, drivetrain).withTimeout(2);
-
-    return baseline;
+    return autonomousSelector.getSelected();
+      
   }
 }

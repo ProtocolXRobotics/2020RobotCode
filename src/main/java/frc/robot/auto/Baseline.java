@@ -26,7 +26,7 @@ public class Baseline extends SequentialCommandGroup {
      */
     public Baseline(Drivetrain drivetrain, Intake intake, Shooter shooter, Indexer indexer, Beltevator beltevator, Limelight limelight, Trajectories trajectories) {
         addCommands(
-                new AutoShoot(shooter, 1000), //Start spinning shooter
+                new AutoShoot(shooter, 1500), //Start spinning shooter
                 new ParallelDeadlineGroup(
                 new WaitCommand(2), 
                 new LimelightAlign(limelight, drivetrain)), // Wait for shooter to spin up and align with limelight

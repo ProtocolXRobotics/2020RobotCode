@@ -38,7 +38,7 @@ public class Unjam extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    beltevator.spinAccelWheel(-0.9);
+    beltevator.spinAccelWheel(-0.8);
     indexer.setPower(0, 0.5);
 
   }

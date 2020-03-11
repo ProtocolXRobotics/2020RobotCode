@@ -37,7 +37,7 @@ public class LimelightAlign extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double steer_cmd = limelight.GenerateSteer();
+    double steer_cmd = limelight.GenerateSteer(false);
     System.out.println(steer_cmd);
     drivetrain.arcadeDrive(0, steer_cmd, true);
     

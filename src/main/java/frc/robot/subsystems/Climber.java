@@ -17,17 +17,11 @@ public class Climber extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
-  VictorSPX wrist = new VictorSPX(Constants.climb);
   VictorSPX winch = new VictorSPX(Constants.winch);
   
   
   public Climber() {
    
-  }
-
-  public void wristArm(double power) {
-    wrist.set(ControlMode.PercentOutput, power);
-    
   }
 
   public void climb(double power) {

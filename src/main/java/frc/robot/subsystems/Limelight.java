@@ -196,13 +196,16 @@ public class Limelight extends SubsystemBase {
         setPipeline(Pipeline.CLOSE);
     }
 
-    public double GenerateSteer() {
-        txError = -getHorizontalAngle();             // I know that this may be slightly redundent but fight me!
+    public double GenerateSteer(boolean seek) {
+        txError = -getHorizontalAngle();             
         if (txError != previoustxError){
           deltatxError = txError - previoustxError;
         }
         if (!hasTarget()) {
-          LimelightSteerCommand = 0.0;
+            if(seek)
+                LimelightSteerCommand = 0.3;
+            else
+                LimelightSteerCommand = 0;
         } else {
           LimelightSteerCommand = (txError * Steer_K) + (deltatxError * Steer_D);
         }

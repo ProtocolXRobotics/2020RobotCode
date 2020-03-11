@@ -64,44 +64,6 @@ public void setVelocityFeedforward(double RPM) {
   shooterPID.setReference(RPM, ControlType.kVelocity, 0, motorFeedForward.calculate(RPM/60, (RPM-shooterEnc.getVelocity())/60));
 }
 
-public void takeBackHalf(double RPM) {
-  double motorPower, gain, lastError, tbh;
-  tbh = 0;
-  lastError = 0.0;
-  motorPower = 0.0;
-  gain = 1e3;
-  double error = RPM - shooterEnc.getVelocity();
-  
-		
-  motorPower += gain * error;
-
-  motorPower = clamp(motorPower);
-
-  //If the error has changed in sign since the last processing
-  if (isPositive(lastError) != isPositive(error)) {
-      motorPower = 0.5 * (motorPower + tbh);
-      tbh = motorPower;
-
-      lastError = error;
-  }
-
-  masterShooter.set(motorPower);
-
-}
-
-private static double clamp(double input) {
-    if (input > 1) {
-        return 1;
-    }
-    if (input < -1) {
-        return -1;
-    }
-    return input;
-}
-
-private static boolean isPositive(double input) {
-  return input > 0;
-}
 
 public void setPower(double power) {
   masterShooter.set(power);

@@ -43,7 +43,7 @@ public class AutoLimelightShoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double steer_cmd = limelight.GenerateSteer();
+    double steer_cmd = limelight.GenerateSteer(true);
     drivetrain.arcadeDrive(0, steer_cmd, true);
     if(steer_cmd < 0.05) {
       double RPM = limelight.formulaRpm();

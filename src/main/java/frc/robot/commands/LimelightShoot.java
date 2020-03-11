@@ -38,7 +38,7 @@ public class LimelightShoot extends CommandBase {
   @Override
   public void execute() {
     double RPM = limelight.formulaRpm();
-    shooter.setVelocityFeedforward(RPM);
+    shooter.setVelocity(RPM);
     
     
 
